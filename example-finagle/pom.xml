@@ -11,5 +11,16 @@
 
     <artifactId>example-finagle</artifactId>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>com.twitter</groupId>
+            <artifactId>finagle-thrift_2.10</artifactId>
+            <version>6.22.0</version>
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.twitter</groupId>-->
+            <!--<artifactId>finagle-zipkin_2.10</artifactId>-->
+            <!--<version>6.22.0</version>-->
+        <!--</dependency>-->
+    </dependencies>
 </project>
