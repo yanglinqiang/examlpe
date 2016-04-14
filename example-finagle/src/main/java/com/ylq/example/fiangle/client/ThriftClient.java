@@ -1,6 +1,6 @@
 package com.ylq.example.fiangle.client;
 
-import com.ylq.example.fiangle.BrandServ;
+import com.ylq.example.fiangle.Detect;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
@@ -17,10 +17,12 @@ public class ThriftClient {
     public static void main(String[] args) {
         TTransport transport = new TFramedTransport(new TSocket("127.0.0.1", 11005));
         TProtocol protocol = new TBinaryProtocol(transport);
-        BrandServ.Client client = new BrandServ.Client(protocol);
+        Detect.Client client = new Detect.Client(protocol);
+//        BrandServ.Client client=new BrandServ.Client(protocol);
         try {
             transport.open();
-            System.out.println(client.getBrandCodeById(1005));
+//            System.out.println(client.getBrandCodeById(1005));
+            System.out.println(client.ping());
         } catch (TTransportException e) {
             e.printStackTrace();
         } catch (TException e) {

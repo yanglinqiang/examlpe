@@ -6,12 +6,15 @@ import com.twitter.finagle.thrift.ThriftServerFramedCodec;
 import com.twitter.util.Duration;
 import com.twitter.util.ExecutorServiceFuturePool;
 import com.twitter.util.Function0;
+import com.ylq.example.fiangle.Detect;
+import com.ylq.example.fiangle.ServicePing;
 import org.apache.commons.lang.reflect.MethodUtils;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocolFactory;
 
 import java.lang.reflect.*;
 import java.net.InetSocketAddress;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -43,6 +46,8 @@ public class FinagleServerHandler implements InvocationHandler {
             e.printStackTrace();
         } catch (InstantiationException e) {
             e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
         }
     }
 
@@ -55,9 +60,9 @@ public class FinagleServerHandler implements InvocationHandler {
      *
      * @return
      */
-    public void start() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public void start() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchFieldException {
         //finagle接口文件父类
-        Class thriftApi = Class.forName("com.zhe800.finagle.thrift.test.BrandServ");
+        Class thriftApi = Class.forName("com.ylq.example.fiangle.BrandServ");
         //提供服务的接口
         Class serviceIface = null;
         Class serviceImpl = null;
@@ -74,8 +79,17 @@ public class FinagleServerHandler implements InvocationHandler {
                 serviceImpl = c;
             }
         }
+
+
+        //接口中添加这个service
+        Class[] iC = new Class[serviceImpl.getInterfaces().length + 1];
+        for (int i = 0; i < iC.length - 1; i++) {
+            iC[i] = serviceImpl.getInterfaces()[i];
+        }
+        iC[iC.length - 1] = Detect.ServiceIface.class;
+
         //生成代理类（此处借用finagle生成ServiceToClient类。）
-        Object proxy = Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), serviceImpl.getInterfaces(), this);
+        Object proxy = Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), iC, this);
         //获取构造函数
         Constructor con = serviceClass.getConstructor(serviceIface, TProtocolFactory.class);
         //反射生成service对象(相当于shell类)
@@ -87,6 +101,13 @@ public class FinagleServerHandler implements InvocationHandler {
                 .requestTimeout(new Duration(30000 * Duration.NanosPerMillisecond()))//请求超时时间
                 .keepAlive(true)
                 .bindTo(new InetSocketAddress(port));
+        ServicePing servicePing = new ServicePing((Detect.ServiceIface) proxy, new TBinaryProtocol.Factory());
+
+        Field field = serviceClass.getDeclaredField("functionMap");
+        field.setAccessible(true);
+        ((Map) field.get(service)).put("ping", servicePing.getFunmap());
+
+
         //添加zipkin监控
         ExecutorService executorService = Executors.newFixedThreadPool(threads);
         futurePool = new ExecutorServiceFuturePool(executorService);
@@ -100,6 +121,7 @@ public class FinagleServerHandler implements InvocationHandler {
         this.invokeBefore();
         Object result = null;
         try {
+            System.out.println(method.getName());
             result = futurePool.apply(new FinagleProxy(method.getName(), args));
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -151,6 +173,9 @@ public class FinagleServerHandler implements InvocationHandler {
             }
             //solved param is a super class error
             try {
+                if ("ping".equals(methodName)) {
+                    return "SUCCESS";
+                }
                 result = MethodUtils.invokeMethod(brandService, methodName, params, paramsClass);
             } catch (ReflectiveOperationException e) {
                 throw new RuntimeException("Loom调用抛出ReflectiveOperationException", e);
