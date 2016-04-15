@@ -92,8 +92,9 @@ public class FinagleServerHandler implements InvocationHandler {
         Object proxy = Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), iC, this);
         //获取构造函数
         Constructor con = serviceClass.getConstructor(serviceIface, TProtocolFactory.class);
+        TBinaryProtocol.Factory factory=new TBinaryProtocol.Factory();
         //反射生成service对象(相当于shell类)
-        Service service = (Service) con.newInstance(proxy, new TBinaryProtocol.Factory());
+        Service service = (Service) con.newInstance(proxy, factory);
         //创建finagle启动服务需要的对象
         ServerBuilder serverBuilder = ServerBuilder.get()
                 .name("BrandServ")
@@ -101,7 +102,7 @@ public class FinagleServerHandler implements InvocationHandler {
                 .requestTimeout(new Duration(30000 * Duration.NanosPerMillisecond()))//请求超时时间
                 .keepAlive(true)
                 .bindTo(new InetSocketAddress(port));
-        ServicePing servicePing = new ServicePing((Detect.ServiceIface) proxy, new TBinaryProtocol.Factory());
+        ServicePing servicePing = new ServicePing((Detect.ServiceIface) proxy, factory);
 
         Field field = serviceClass.getDeclaredField("functionMap");
         field.setAccessible(true);
