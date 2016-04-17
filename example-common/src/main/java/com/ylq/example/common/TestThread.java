@@ -2,9 +2,28 @@ package com.ylq.example.common;
 
 /**
  * Class description goes here
- * Created by ylq on 16/4/15 下午12:24.
+ * Created by ylq on 16/4/16 下午3:53.
  */
-public class Practice {
+public class TestThread extends Thread {
+    public static int n = 0;
+//    static ReentrantLock reentrantLock = new ReentrantLock();
+
+    static synchronized void inc() {
+//        reentrantLock.lock();
+        n++;
+//        reentrantLock.unlock();
+    }
+
+    public void run() {
+        for (int i = 0; i < 10; i++)
+            try {
+                inc();
+                sleep(3);  // 为了使运行结果更随机，延迟3毫秒
+
+            } catch (Exception e) {
+            }
+    }
+
     public static void main(String[] args) throws InterruptedException {
         Long now = System.currentTimeMillis();
         Thread threads[] = new Thread[100];
