@@ -12,9 +12,7 @@
         <module>example-elasticsearch</module>
         <module>example-elasticsearch-api</module>
         <module>example-spark</module>
-        <module>example-spring-boot</module>
         <module>example-kafka</module>
-        <module>example-finagle</module>
         <module>example-common</module>
     </modules>
     <properties>

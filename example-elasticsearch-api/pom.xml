@@ -26,7 +26,7 @@
         <dependency>
             <groupId>com.zhe800</groupId>
             <artifactId>trade-common</artifactId>
-            <version>2.0.0-SNAPSHOT</version>
+            <version>2.2.0-SNAPSHOT</version>
         </dependency>
 
         <dependency>
