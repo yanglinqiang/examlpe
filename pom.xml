@@ -14,6 +14,7 @@
         <module>example-spark</module>
         <module>example-kafka</module>
         <module>example-common</module>
+        <module>example-off-heap</module>
     </modules>
     <properties>
         <slf4j.version>1.6.4</slf4j.version>
