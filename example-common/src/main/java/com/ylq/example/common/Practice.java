@@ -6,5 +6,6 @@ package com.ylq.example.common;
  */
 public class Practice {
     public static void main(String[] args) throws InterruptedException {
+        System.out.println('C'&'A');
     }
 }
