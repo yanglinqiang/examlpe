@@ -67,6 +67,7 @@
 event判断流程图
 	
 ```flow
+
 eventid=>start: eventid
 e=>end: 结束
 	
@@ -104,6 +105,7 @@ eventLable子流程
 
 
 ```flow
+
 lableId=>start: lableId
 e=>end: 结束
 	
@@ -131,6 +133,7 @@ lableId->lableId存在(yes)->lableId白名单(yes)->确定是白名单->e
 lableId存在(no)->超过限制(yes)->outoflimit->e
 超过限制(no)->labelFlag->e
 lableId白名单(no)->black->e
+
 ```
 		
 ###PartnerNameChanger
