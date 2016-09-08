@@ -17,6 +17,7 @@
         <module>example-off-heap</module>
         <module>example-mysql</module>
         <module>example-scylla</module>
+        <module>example-webapp</module>
     </modules>
     <properties>
         <slf4j.version>1.6.4</slf4j.version>
